@@ -7,9 +7,11 @@ echo " |_|    |_|_| .__/  |___/ |___/\___|\__|\__,_| .__/ ";
 echo "            | |                              | |    ";
 echo "            |_|                              |_|    ";
 
+echo ":: Update repos"
+
 # Setup prep
-sudo apt update
-sudo apt upgrade
+sudo apt update -y
+sudo apt upgrade -y
 
 sudo apt install -y wget curl git
 
@@ -28,8 +30,8 @@ curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg | sudo 
 sudo chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg
 echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" | sudo tee /etc/apt/sources.list.d/github-cli.list > /dev/null
 
-sudo add-apt-repository ppa:aslatter/ppa
-sudo apt-add-repository ppa:fish-shell/release-3
+sudo add-apt-repository ppa:aslatter/ppa -y
+sudo apt-add-repository ppa:fish-shell/release-3 -y
 
 echo ":: Install deps"
 
@@ -38,12 +40,31 @@ sudo apt upgrade -y
 sudo apt install -y gh alacritty neovim powerline tmux fish neofetch
 
 echo ":: Start config"
+
 gh auth login
 gh repo clone fivanusec/My-dotfiles
 cd My-dotfiles
 cp -r .config ~/
-cp .tmux ~/
-cp .tmux.powerline ~/
+cp .tmux.conf ~/
+cp .tmux.powerline.conf ~/
 chsh -s /usr/bin/fish
 
+echo ":: Prepare node, yarn, npm and python"
+
+curl -s https://deb.nodesource.com/setup_16.x | sudo bash
+curl -sL https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add -
+echo "deb https://dl.yarnpkg.com/debian/ stable main" | sudo tee /etc/apt/sources.list.d/yarn.list
+
+echo ":: Install node, yarn, npm, and python"
+sudo apt install nodejs yarn -y
+
+echo ":: Prepare vim"
+
+git clone https://github.com/VundleVim/Vundle.vim.git ~/.vim/bundle/Vundle.vim
+
+nvim +PluginInstall +q +q
+
+cd .vim/bundle/coc.nvim
+
+yarn
 
